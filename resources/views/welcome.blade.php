@@ -18,11 +18,13 @@
           function drawChart() {
             var data = google.visualization.arrayToDataTable([
               ['Date', 'High', 'Low','Open','Close'],
-             
+              <?php
+                echo $data;
+              ?>
             ]);
 
             var options = {
-              title: 'Company Performance',
+              title: '<?php echo $val; ?> Company Performance',
               curveType: 'function',
               legend: { position: 'bottom' }
             };
@@ -48,7 +50,9 @@
                 <div class="input-group">
                   <select class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon" name="trade_code">
                     <option selected>Choose...</option>
-                    
+                    @foreach($users as $user)
+                    <option value="{{$user->trade_code}}">{{$user->trade_code}}</option>
+                    @endforeach
                   </select>
                   <input class="btn btn-outline-secondary px-5" type="submit" value="Filter">
                 </div>

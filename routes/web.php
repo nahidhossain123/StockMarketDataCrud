@@ -19,3 +19,7 @@ Route::get('adddata',function(){
     return view('AddData');
 });
 Route::get('/',[JsonModelController::class,'show']);
+Route::post('submit',[JsonModelController::class,'store']);
+Route::get('delete/{id}',[JsonModelController::class,'destroy']);
+Route::get('edit/{id}',[JsonModelController::class,'edit']);
+Route::post('update/{id}',[JsonModelController::class,'update'])->name('update');

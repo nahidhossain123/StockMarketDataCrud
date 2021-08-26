@@ -67,9 +67,27 @@ class JsonModelController extends Controller
      */
     public function show(json_model $json_model,Request $request)
     {
-        
+        $val=$request->trade_code;
+        if($val==null)
+        {
+            $val=DB::table('json_models')->select('trade_code')->first();
+            if($val!=null)
+            {
+                $val=$val->trade_code;
+            }
+        }
+        $users = DB::table('json_models')
+            ->select('trade_code')
+            ->groupBy('trade_code')
+            ->get();
+
+        $chart_data=DB::table('json_models')->where('trade_code','=',$val)->get();
+        $data="";
+        foreach ($chart_data as $value) {
+            $data.="['".$value->date."',".(int)$value->high.",".(int)$value->low.",".(int)$value->open.",".(int)$value->close."],";
+        }
         $dataArry=json_model::paginate(15);
-        return view('welcome',compact('dataArry'));
+        return view('welcome',compact('users','dataArry','data','val'));
     }
 
     /**
@@ -80,7 +98,8 @@ class JsonModelController extends Controller
      */
     public function edit(json_model $json_model ,$id)
     {
-        
+        $data=json_model::find($id);
+        return view('Update',compact('data'));
     }
 
     /**
@@ -92,7 +111,17 @@ class JsonModelController extends Controller
      */
     public function update(Request $request, json_model $json_model)
     {
-        
+        $newData=json_model::find($request->id);
+        $newData->date=$request->input('date');
+        $newData->trade_code=$request->input('trade_code');
+        $newData->high=$request->input('high');
+        $newData->low=$request->input('low');
+        $newData->open=$request->input('open');
+        $newData->close=$request->input('close');
+        $newData->volume=$request->input('volume');
+        $newData->save();
+        $request->session()->flash('message','Updated Successfully');
+        return redirect('/');
     }
 
     /**
@@ -103,6 +132,8 @@ class JsonModelController extends Controller
      */
     public function destroy(json_model $json_model,$id)
     {
-        
+        json_model::destroy(array('id',$id));
+        session()->flash('message','Deleted Successfully');
+        return redirect('/');
     }
 }
