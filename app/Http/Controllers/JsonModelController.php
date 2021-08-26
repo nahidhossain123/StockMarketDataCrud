@@ -1,0 +1,108 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\json_model;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class JsonModelController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        echo "Storing...";
+        $file=$request->file('json');
+        $file->move('upload',$file->getClientOriginalName());
+
+        $contents=file_get_contents('../public/upload/'.$file->getClientOriginalName());
+        $decode=json_decode($contents,true);
+        $data_len=count($decode);
+        set_time_limit(0);
+        foreach($decode as $val)
+        {   
+            $data=new json_model();
+            $data->date=$val['date'];
+            $data->trade_code=$val['trade_code'];
+            $data->high=$val['high'];
+            $data->low=$val['low'];
+            $data->open=$val['open'];
+            $data->close=$val['close'];
+            $data->volume=$val['volume'];
+            $data->save();
+        }
+        return redirect('/');
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\json_model  $json_model
+     * @return \Illuminate\Http\Response
+     */
+    public function show(json_model $json_model,Request $request)
+    {
+        
+        $dataArry=json_model::paginate(15);
+        return view('welcome',compact('dataArry'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\json_model  $json_model
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(json_model $json_model ,$id)
+    {
+        
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\json_model  $json_model
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, json_model $json_model)
+    {
+        
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\json_model  $json_model
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(json_model $json_model,$id)
+    {
+        
+    }
+}
